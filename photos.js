@@ -67,8 +67,59 @@ var setupPhotos = (function ($) {
             var elm = document.createElement('div');
             elm.className = 'photo';
             elm.appendChild(img);
+            elm.appendChild(createPhotoBottomBar(img));
+
             holder.appendChild(elm);
         };
+    }
+
+    /**
+     * Creates the bottom bar for the provided image.
+     * The bar includes the favourite toggle. It also add event listeners for this toggle.
+     * @params img Image for which the bar is created.
+     */
+    function createPhotoBottomBar(img) {
+        // Create the "bar" div element
+        var bar = document.createElement('div');
+        bar.className = 'bar';
+
+        // Create the favourite icon and add it to the bar
+        // It will be a filled or an empty heart, depending on whether it has been marked as favourite or not.
+        var icon = document.createElement('i');
+        icon.className = 'favourite icon-2x ' + getFavouriteClass(img.src);
+        bar.appendChild(icon);
+
+        // Add toggle click event listener
+        $(icon).on('click', function() {
+            toggleFavourite(img.src);
+            
+            // Update the icon
+            $(this).removeClass('icon-heart icon-heart-empty').addClass(getFavouriteClass(img.src));
+        });
+
+        return bar;
+    }
+
+    /**
+     * Returns the appropriate heart icon class.
+     *   - Filled heart icon if the photo is stored as a favourite.
+     *   - Empty heart otherwise 
+     */
+    function getFavouriteClass(url) {
+        return (localStorage[url])? 'icon-heart': 'icon-heart-empty';    
+    }
+
+    /**
+     * Toggles a photo from favourite to non favourite and viceversa.
+     * It stores the status in localStorage in order to make it persistent 
+     * (it will still be there when the page is closed and reopened)
+     */
+    function toggleFavourite(url) {
+        if(localStorage[url]) {
+            localStorage.removeItem(url);
+        } else {
+            localStorage.setItem(url, true);
+        }    
     }
 
     // ----
